@@ -74,7 +74,7 @@ struct BakeryView: View {
                 }.foregroundStyle(Color.bakeryMuted).padding(20).modifier(GlassSurface(radius:24))
             }.buttonStyle(.plain).accessibilityIdentifier("crowd")
             Spacer(minLength:0)
-            Link(destination:URL(string:"https://github.com/appdess/pretzel-demo/issues/new")!) {
+            Link(destination:URL(string:"https://github.com/appdess/decisions-api-demo/issues/new")!) {
                 Label("Report an issue",systemImage:"ladybug")
             }.font(.caption).foregroundStyle(Color.bakeryMuted)
                 .accessibilityIdentifier("reportIssue")
@@ -242,7 +242,7 @@ struct SettingsView: View {
             Form {
                 Section("Demo") {
                     Toggle("Illustrative sample",isOn:$model.fixture)
-                    Text("Pretzel · 1.2.1 (6)").font(.caption).foregroundStyle(.secondary)
+                    Text("Decisions API Demo · 1.2.1 (7)").font(.caption).foregroundStyle(.secondary)
                 }
                 Section("Demo API access") {
                     Label(model.hasKey ? "Key stored on this device" : "No API key configured",systemImage:model.hasKey ? "key.fill" : "key")

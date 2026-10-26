@@ -1,6 +1,6 @@
-# 🥨 Pretzel
+# 🥨 Decisions API Demo
 
-A small SwiftUI demo of the [OpenAI Decisions API](https://developers.openai.com/api/docs/guides/decisions). Take a photo, ask a focused question, and get a typed answer your app can act on.
+Pretzel is a small SwiftUI demo of the [OpenAI Decisions API](https://developers.openai.com/api/docs/guides/decisions). Take a photo, ask a focused question, and get a typed answer your app can act on.
 
 **Pretzel or not?** returns a yes/no signal. **Classify** identifies a pretzel, croissant, bread roll, doughnut, cookie, or **Other**. A clear photo of a guitar or laptop returns **Not a pretzel** or **Other**. **Audience gestures** demonstrates classification of visible gestures. Unclear inputs go to **Check manually**. Tap **Details** to inspect the returned answers.
 
