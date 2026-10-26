@@ -98,7 +98,7 @@ struct BakeryView: View {
                 }
             }.padding(24).frame(maxWidth:.infinity,alignment:.leading).modifier(GlassSurface(radius:30))
         }.buttonStyle(.plain).accessibilityLabel(title)
-            .accessibilityHint(mode == .binary ? "Opens the camera for a yes or no pretzel check" : "Opens the camera to identify pretzels, croissants, bread rolls, doughnuts, cookies or other food")
+            .accessibilityHint(mode == .binary ? "Opens the camera for a yes or no pretzel check" : "Opens the camera to identify pretzels, croissants, bread rolls, doughnuts, cookies or other objects")
             .accessibilityIdentifier(mode.rawValue)
     }
     private func pretzelOption(yes:Bool) -> some View {
@@ -177,9 +177,18 @@ struct BakeryView: View {
                 }
                 Spacer(minLength:10)
                 VStack(spacing:24) {
-                    Image(systemName:decision.outcome == .positive ? "checkmark" : decision.outcome == .negative ? "xmark" : "questionmark")
-                        .font(.system(size:45,weight:.medium)).foregroundStyle(tint).frame(width:100,height:100)
-                        .background(tint.opacity(0.09),in:Circle()).accessibilityHidden(true)
+                    if model.mode == .binary && decision.outcome == .negative {
+                        Text("🥨").font(.system(size:108))
+                            .overlay {
+                                Image(systemName:"xmark").font(.system(size:122,weight:.black))
+                                    .foregroundStyle(tint).shadow(color:.white,radius:2)
+                            }
+                            .frame(width:150,height:150).accessibilityHidden(true)
+                    } else {
+                        Image(systemName:decision.outcome == .positive ? "checkmark" : decision.outcome == .negative ? "xmark" : "questionmark")
+                            .font(.system(size:45,weight:.medium)).foregroundStyle(tint).frame(width:100,height:100)
+                            .background(tint.opacity(0.09),in:Circle()).accessibilityHidden(true)
+                    }
                     Text(headline).font(.system(size:49,weight:.semibold,design:.rounded)).tracking(-1.8).minimumScaleFactor(0.55).lineLimit(1).foregroundStyle(tint).accessibilityIdentifier("decisionSignal")
                     if model.mode != .choice && model.mode != .crowd && decision.outcome != .review { Text(decision.title).font(.title3).accessibilityIdentifier("decisionTitle") }
                     if decision.outcome == .review || model.mode == .crowd { Text(decision.detail).font(.subheadline).foregroundStyle(Color.bakeryMuted).multilineTextAlignment(.center) }
@@ -229,7 +238,7 @@ struct SettingsView: View {
             Form {
                 Section("Demo") {
                     Toggle("Illustrative sample",isOn:$model.fixture)
-                    Text("Pretzel · 1.2 (3)").font(.caption).foregroundStyle(.secondary)
+                    Text("Pretzel · 1.2.1 (5)").font(.caption).foregroundStyle(.secondary)
                 }
                 Section("Demo API access") {
                     Label(model.hasKey ? "Key stored on this device" : "No API key configured",systemImage:model.hasKey ? "key.fill" : "key")

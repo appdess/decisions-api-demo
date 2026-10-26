@@ -54,6 +54,14 @@ import Foundation
         let json = try JSONSerialization.jsonObject(with:data) as! [String:Any]
         check(json["model"] as? String == "gpt-6-luna","model")
         check((json["questions"] as? [[String:Any]])?.count == 3,"question count")
+        // A recognizable non-food subject is a valid negative/other result.
+        r = DecisionPolicy.fixture(.binary); r.answers[2].probability = 0.01
+        check(DecisionPolicy.route(.binary,r).title == "Not a pretzel","clear non-food binary negative")
+        r = DecisionPolicy.fixture(.choice); r.answers[2].choice = "other"
+        r.answers[2].probabilities = DecisionPolicy.categories.map { .init(value:$0,probability:$0 == "other" ? 0.95 : 0.01) }
+        check(DecisionPolicy.route(.choice,r).title == "Other","clear non-food choice")
+        r.answers[0].probability = 0.1
+        check(DecisionPolicy.route(.choice,r).outcome == .review,"truly unclear other still needs review")
         print("Passed \(count) native policy checks.")
     }
 }
