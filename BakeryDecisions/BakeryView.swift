@@ -47,12 +47,12 @@ struct BakeryView: View {
     private var header: some View {
         HStack {
             if cameraVisible {
-                Button { goHome() } label: { Image(systemName:"arrow.left").frame(width:44,height:44).modifier(GlassSurface(radius:22)) }
+                Button { goHome() } label: { Image(systemName:"arrow.left").frame(width:44,height:44).contentShape(Circle()).modifier(GlassSurface(radius:22)) }
                     .accessibilityLabel("Choose mode").accessibilityIdentifier("home")
             }
             Spacer()
             Button { model.reset(); camera.stop(); clearInputTasks(); settings = true } label: {
-                Image(systemName:"slider.horizontal.3").frame(width:44,height:44).modifier(GlassSurface(radius:22))
+                Image(systemName:"slider.horizontal.3").frame(width:44,height:44).contentShape(Circle()).modifier(GlassSurface(radius:22))
             }.accessibilityLabel("Settings").accessibilityIdentifier("settings")
         }.buttonStyle(.plain)
     }
@@ -71,7 +71,7 @@ struct BakeryView: View {
                     Text("Audience gestures").font(.system(size:15,weight:.medium))
                     Spacer()
                     Image(systemName:"arrow.up.right").font(.system(size:13))
-                }.foregroundStyle(Color.bakeryMuted).padding(20).modifier(GlassSurface(radius:24))
+                }.foregroundStyle(Color.bakeryMuted).padding(20).contentShape(RoundedRectangle(cornerRadius:24)).modifier(GlassSurface(radius:24))
             }.buttonStyle(.plain).accessibilityIdentifier("crowd")
             Spacer(minLength:0)
             Link(destination:URL(string:"https://github.com/appdess/decisions-api-demo/issues/new")!) {
@@ -100,7 +100,7 @@ struct BakeryView: View {
                     Spacer()
                     Image(systemName:"arrow.up.right").font(.system(size:16,weight:.medium)).foregroundStyle(Color.bakeryMuted)
                 }
-            }.padding(24).frame(maxWidth:.infinity,alignment:.leading).modifier(GlassSurface(radius:30))
+            }.padding(24).frame(maxWidth:.infinity,alignment:.leading).contentShape(RoundedRectangle(cornerRadius:30)).modifier(GlassSurface(radius:30))
         }.buttonStyle(.plain).accessibilityLabel(title)
             .accessibilityHint(mode == .binary ? "Opens the camera for a yes or no pretzel check" : "Opens the camera to identify pretzels, croissants, bread rolls, doughnuts, cookies or other objects")
             .accessibilityIdentifier(mode.rawValue)
@@ -128,7 +128,7 @@ struct BakeryView: View {
                 else {
                     VStack(spacing:18) {
                         Image(systemName:"viewfinder").font(.system(size:68,weight:.ultraLight)).foregroundStyle(Color.bakeryAccent.opacity(0.65))
-                        Text(camera.message ?? (model.mode == .crowd ? "Frame visible audience gestures." : "Frame one item.")).font(.subheadline).multilineTextAlignment(.center).foregroundStyle(Color.bakeryMuted).padding(.horizontal,30)
+                        Text(camera.message ?? (model.mode == .crowd ? "Frame visible audience gestures." : model.mode == .binary ? "Frame the photo. Multiple items are welcome." : "Frame one item.")).font(.subheadline).multilineTextAlignment(.center).foregroundStyle(Color.bakeryMuted).padding(.horizontal,30)
                     }
                 }
                 if model.fixture {
@@ -147,7 +147,7 @@ struct BakeryView: View {
             if !model.hasKey && !model.fixture { Button("Add demo API key") { settings=true }.font(.subheadline) }
             HStack {
                 PhotosPicker(selection:$photoItem,matching:.images,photoLibrary:.shared()) {
-                    Image(systemName:"photo.on.rectangle").font(.system(size:21)).frame(width:52,height:52).modifier(GlassSurface(radius:26))
+                    Image(systemName:"photo.on.rectangle").font(.system(size:21)).frame(width:52,height:52).contentShape(Circle()).modifier(GlassSurface(radius:26))
                 }.accessibilityLabel("Choose photo").accessibilityIdentifier("photos").disabled(model.fixture || model.busy || importing)
                 Spacer()
                 Button {
@@ -159,7 +159,7 @@ struct BakeryView: View {
                         Circle().stroke(Color.bakeryInk.opacity(0.7),lineWidth:1.5).frame(width:80,height:80)
                         Circle().fill(Color.bakeryInk).frame(width:66,height:66)
                         Image(systemName:model.fixture ? "play.fill" : "camera.fill").font(.system(size:22)).foregroundStyle(.white)
-                    }
+                    }.contentShape(Circle())
                 }.accessibilityLabel(model.fixture ? "Try sample" : camera.running ? "Take photo and classify" : "Open camera")
                     .accessibilityIdentifier("shutter").disabled(model.busy || importing || camera.capturing)
                 Spacer()
@@ -175,7 +175,7 @@ struct BakeryView: View {
             BakeryBackdrop()
             VStack(spacing:22) {
                 HStack {
-                    Button { goHome() } label: { Image(systemName:"arrow.left").frame(width:44,height:44).modifier(GlassSurface(radius:22)) }.accessibilityLabel("Choose mode")
+                    Button { goHome() } label: { Image(systemName:"arrow.left").frame(width:44,height:44).contentShape(Circle()).modifier(GlassSurface(radius:22)) }.accessibilityLabel("Choose mode")
                     Spacer()
                     Text(model.fixture ? "SAMPLE" : "RESULT").font(.system(size:10,weight:.semibold)).tracking(2).foregroundStyle(Color.bakeryMuted)
                 }
@@ -202,7 +202,7 @@ struct BakeryView: View {
                 Button { inspect=true } label: { Label("Details",systemImage:"chevron.left.forwardslash.chevron.right") }.font(.caption).foregroundStyle(Color.bakeryMuted)
                 Spacer(minLength:10)
                 Button { if model.fixture { model.reset() } else { startCamera() } } label: {
-                    HStack { Image(systemName:"camera"); Text("Next photo"); Spacer(); Image(systemName:"arrow.right") }.font(.system(size:17,weight:.medium)).padding(22).modifier(GlassSurface(radius:26))
+                    HStack { Image(systemName:"camera"); Text("Next photo"); Spacer(); Image(systemName:"arrow.right") }.font(.system(size:17,weight:.medium)).padding(22).frame(maxWidth:.infinity).contentShape(RoundedRectangle(cornerRadius:26)).modifier(GlassSurface(radius:26))
                 }.accessibilityIdentifier("next")
             }.padding(24).buttonStyle(.plain)
         }
@@ -237,12 +237,18 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var key = ""
     @State private var message: String?
+    private var versionLabel: String {
+        let info = Bundle.main.infoDictionary ?? [:]
+        let version = info["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info["CFBundleVersion"] as? String ?? "?"
+        return "Decisions API Demo · \(version) (\(build))"
+    }
     var body: some View {
         NavigationStack {
             Form {
                 Section("Demo") {
                     Toggle("Illustrative sample",isOn:$model.fixture)
-                    Text("Decisions API Demo · 1.2.1 (7)").font(.caption).foregroundStyle(.secondary)
+                    Text(versionLabel).font(.caption).foregroundStyle(.secondary)
                 }
                 Section("Demo API access") {
                     Label(model.hasKey ? "Key stored on this device" : "No API key configured",systemImage:model.hasKey ? "key.fill" : "key")
@@ -252,7 +258,7 @@ struct SettingsView: View {
                     if let message { Text(message).font(.footnote) }
                 }
                 Section { Text("Use your own key with Decisions Write permission. Keys are stored in this device's Keychain and sent only to api.openai.com. No key is included in the app.").font(.footnote) } header: { Text("Personal demo") } footer: { Text("API usage is billable. A production app should keep service credentials on a backend.") }
-                Section("Application policy") { Text("Accept ≥ 0.80; negative ≤ 0.20. Choice additionally requires confidence ≥ 0.60. These are demo thresholds, not calibrated accuracy.").font(.footnote); Text("Unclear, multiple-food-item, refused and malformed answers go to manual review. Fixtures use hand-authored answers; live errors never substitute fixtures.").font(.footnote) }
+                Section("Application policy") { Text("Accept ≥ 0.80; negative ≤ 0.20. Choice additionally requires confidence ≥ 0.60. These are demo thresholds, not calibrated accuracy.").font(.footnote); Text("Pretzel or not checks the whole photo and allows multiple items. Classify needs one main item. Unclear, refused and malformed answers go to manual review. Fixtures use hand-authored answers; live errors never substitute fixtures.").font(.footnote) }
             }.navigationTitle("Settings").toolbar { Button("Done") { key = ""; dismiss() } }.tint(Color.bakeryAccent)
         }
     }

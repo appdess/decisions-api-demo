@@ -2,7 +2,7 @@
 
 Pretzel is a small SwiftUI demo of the [OpenAI Decisions API](https://developers.openai.com/api/docs/guides/decisions). Take a photo, ask a focused question, and get a typed answer your app can act on.
 
-**Pretzel or not?** returns a yes/no signal. **Classify** identifies a pretzel, croissant, bread roll, doughnut, cookie, or **Other**. A clear photo of a guitar or laptop returns **Not a pretzel** or **Other**. **Audience gestures** demonstrates classification of visible gestures. Unclear inputs go to **Check manually**. Tap **Details** to inspect the returned answers.
+**Pretzel or not?** checks the whole photo: at least one visible pretzel returns **Pretzel**; a clear scene with none returns **Not a pretzel**. Multiple items are welcome. **Classify** identifies one main item as a pretzel, croissant, bread roll, doughnut, cookie, or **Other**; multiple main items still need manual review in this mode. A clear photo of a guitar or laptop returns **Not a pretzel** or **Other**. **Audience gestures** demonstrates classification of visible gestures. Unclear inputs go to **Check manually**. Tap **Details** to inspect the returned answers.
 
 ## Request and response
 
@@ -12,7 +12,7 @@ The app posts to `https://api.openai.com/v1/decisions` with model `gpt-6-luna`. 
 {
   "type": "predicate",
   "name": "pretzel",
-  "instructions": "Is the single visible food item a pretzel?"
+  "instructions": "Is at least one pretzel visible in the photo: a baked, twisted loop with the characteristic crossed arms? Check all visible items; multiple items are allowed. Answer false when the visible scene contains no pretzels, including scenes with other foods or non-food objects. Ignore labels and packaging; do not infer hidden contents."
 }
 ```
 
@@ -22,7 +22,6 @@ An illustrative response excerpt:
 {
   "answers": [
     { "type": "predicate", "name": "clear", "probability": 0.97 },
-    { "type": "predicate", "name": "single", "probability": 0.98 },
     { "type": "predicate", "name": "pretzel", "probability": 0.98 }
   ]
 }
@@ -50,7 +49,7 @@ To explore without a key or network, enable **Illustrative sample** in Settings.
 ./test-core.sh
 ```
 
-Runs offline checks of request construction and decision routing. Rehearse live on your presentation device with a pretzel, another item, and an unclear view. See [asset provenance](ASSET-PROVENANCE.md) for the generated sample image.
+Runs offline checks of request construction and decision routing. Rehearse live on your presentation device with a pretzel, several non-pretzel items, a pretzel among other items, and an unclear view. See [asset provenance](ASSET-PROVENANCE.md) for the generated sample image.
 
 ## Create a demo API key
 
