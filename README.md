@@ -4,6 +4,14 @@ Pretzel is a small SwiftUI demo of the [OpenAI Decisions API](https://developers
 
 **Pretzel or not?** checks the whole photo: at least one visible pretzel returns **Pretzel**; a clear scene with none returns **Not a pretzel**. Multiple items are welcome. **Classify** identifies one main item as a pretzel, croissant, bread roll, doughnut, cookie, or **Other**; multiple main items still need manual review in this mode. A clear photo of a guitar or laptop returns **Not a pretzel** or **Other**. **Audience gestures** demonstrates classification of visible gestures. Unclear inputs go to **Check manually**. Tap **Details** to inspect the returned answers.
 
+## App examples
+
+iPhone screenshots showing the home screen and a pretzel check result.
+
+| Choose a mode | Pretzel detected |
+| :---: | :---: |
+| <img src="docs/screenshots/home.png" alt="Pretzel home screen with Pretzel or not, Classify, and Audience gestures modes" width="280"> | <img src="docs/screenshots/pretzel-result.png" alt="Pretzel result screen showing Yes, Pretzel, API processing time, and the Next photo button" width="280"> |
+
 ## Request and response
 
 The app posts to `https://api.openai.com/v1/decisions` with model `gpt-6-luna`. It sends a resized JPEG and named questions. For example, the pretzel check asks:
