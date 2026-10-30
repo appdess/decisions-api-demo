@@ -10,25 +10,9 @@ Tap **Details** to inspect the returned answers, or **Example result** on the ho
 
 ## App examples
 
-The opening screen below was captured in the iPhone simulator for Servus Snap 1.4.0. Bavarian Battle appears first, with the same card layout and check/X badges as Pretzel or not?. Alexander's Lederhosen-versus-shorts result was captured on an iPhone on 30 October 2026 and shows the feature's earlier More Bavarian label. The app also offers a separate illustrative pretzel/croissant sample with hand-authored answers and no API call.
-
-| Opening screen (simulator) | Bavarian Battle on iPhone |
-| :---: | :---: |
-| <img src="docs/screenshots/opening-screen.png" alt="Servus Snap opening interface captured in the iPhone simulator, with Flag badge branding and Bavarian Battle first, followed by Pretzel or not and Classify" width="280"> | <img src="docs/screenshots/bavarian-battle-iphone.png" alt="iPhone result comparing Lederhosen in Photo A with shorts in Photo B, selecting Photo A and showing the model's probability distribution and 515 ms API processing time" width="280"> |
-
-### Bavarian Battle
-
-Take or select **Photo A**, then **Photo B**, and tap **Compare photos**. Tap either thumbnail to replace just that image. A traditional pretzel should normally beat a croissant in either order, but the prompt is open to other food, objects, clothing, architecture, places, and scenes. Two similar subjects, or two ordinary objects without Bavarian cues, can tie.
-
-This is a playful cultural comparison, not proof of origin or authenticity. The prompt weighs distinctive cues over generic colors or scenery, ignores instructions embedded in photos, and does not infer a person's nationality or identity. See [the prompt and rehearsal cases](docs/more-bavarian.md).
-
-The result displays the API's full four-option probability distribution: **Photo A**, **Photo B**, **About the same**, and **Unclear**. The API's separate confidence value is shown below. For example, 97% for Photo A estimates the likelihood that A has the stronger Bavarian association. Valid probabilities remain visible when the app asks for manual review; malformed or refused answers never get invented percentages.
-
-<img src="docs/screenshots/bavarian-sample.png" alt="Illustrative sample result choosing Photo A, the pretzel, as more Bavarian than Photo B, the croissant; labeled hand-authored answer with no API call" width="280">
-
-The app uses the **Flag badge** logo, selected by Alexander. Two alternatives are included alongside it:
-
-![Three Bavarian-inspired logo options](docs/brand/logo-options.png)
+| Opening screen (simulator) | Bavarian Battle on iPhone | Illustrative sample |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/opening-screen.png" alt="Servus Snap opening screen" width="240"> | <img src="docs/screenshots/bavarian-battle-iphone.png" alt="Lederhosen versus shorts comparison on iPhone" width="240"> | <img src="docs/screenshots/bavarian-sample.png" alt="Pretzel versus croissant sample with hand-authored answers and no API call" width="240"> |
 
 ## Request and response
 
@@ -90,4 +74,4 @@ Click **Create secret key**, copy the secret once, and paste it directly into th
 
 ![Restricted key with only Decisions Write enabled](docs/api-key-permissions.jpg)
 
-The key is stored in the local device's Keychain, does not sync, and is sent only to `api.openai.com`. Use **Remove stored key** to remove it from the app, and revoke it in Platform when finished. Never add a key to the source or screenshots.
+The key is stored in the local device's Keychain, does not sync, and is sent only to `api.openai.com`.
