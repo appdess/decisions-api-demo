@@ -7,7 +7,28 @@ extension Color {
     static let bakeryBG = Color(red:0.95,green:0.96,blue:0.98)
     static let bakeryInk = Color(red:0.12,green:0.15,blue:0.20)
     static let bakeryMuted = Color(red:0.40,green:0.44,blue:0.51)
-    static let bakeryAccent = Color(red:0.27,green:0.37,blue:0.60)
+    static let bakeryAccent = Color(red:0.04,green:0.43,blue:0.77)
+}
+struct BavarianFlag: View {
+    var body: some View {
+        Canvas { context, size in
+            context.fill(Path(CGRect(origin:.zero,size:size)),with:.color(.white))
+            let unit = size.height / 2
+            for row in -1...2 {
+                for column in -2...5 where (row + column).isMultiple(of:2) {
+                    let x = CGFloat(column) * unit + CGFloat(row) * unit * 0.5
+                    let y = CGFloat(row) * unit
+                    var path = Path()
+                    path.move(to:CGPoint(x:x,y:y))
+                    path.addLine(to:CGPoint(x:x + unit,y:y))
+                    path.addLine(to:CGPoint(x:x + unit * 1.5,y:y + unit))
+                    path.addLine(to:CGPoint(x:x + unit * 0.5,y:y + unit))
+                    path.closeSubpath()
+                    context.fill(path,with:.color(.bakeryAccent))
+                }
+            }
+        }
+    }
 }
 struct GlassSurface: ViewModifier {
     var radius: CGFloat = 28

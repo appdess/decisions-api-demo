@@ -2,9 +2,11 @@ import SwiftUI
 import UIKit
 
 @MainActor final class DemoModel: ObservableObject {
-    @Published var mode: BakeryMode = .binary { didSet { cancel() } }
+    @Published var mode: BakeryMode = .binary { didSet { reset() } }
     @Published var fixture = false { didSet { reset() } }
     @Published var photo: UIImage?
+    @Published var comparisonPhoto: UIImage?
+    @Published var activePhotoSlot = 0
     @Published var photoLabel = "CAPTURED STILL"
     @Published var busy = false
     @Published var decision: BakeryDecision?
@@ -18,14 +20,17 @@ import UIKit
     private var revision = UUID()
     private var capturedAt: Date?
     private var jpeg: Data?
-    var ready: Bool { fixture || (jpeg != nil && hasKey) }
+    private var comparisonJPEG: Data?
+    var hasPair: Bool { photo != nil && comparisonPhoto != nil }
+    var ready: Bool { fixture || (jpeg != nil && (mode != .bavarian || comparisonJPEG != nil) && hasKey) }
+    var activePhoto: UIImage? { activePhotoSlot == 0 ? photo : comparisonPhoto }
     func cancel() {
         revision = UUID(); task?.cancel(); task = nil; busy = false
         decision = nil; seconds = nil; apiMilliseconds = nil; raw = ""; error = nil
     }
-    func reset() { cancel(); photo = nil; jpeg = nil; capturedAt = nil; challenge = "" }
-    func setPhoto(_ image: UIImage, label:String = "CAPTURED STILL") {
-        reset()
+    func reset() { cancel(); photo = nil; comparisonPhoto = nil; jpeg = nil; comparisonJPEG = nil; activePhotoSlot = 0; capturedAt = nil; challenge = "" }
+    func setPhoto(_ image: UIImage, label:String = "CAPTURED STILL", slot:Int = 0) {
+        if mode == .bavarian { cancel() } else { reset() }
         // Shape/count checks need a compact frame, not a full-resolution photo upload.
         let maxSize: CGFloat = 512
         let scale = min(1,maxSize / max(image.size.width,image.size.height))
@@ -33,24 +38,29 @@ import UIKit
         let format = UIGraphicsImageRendererFormat(); format.scale = 1
         let resized = UIGraphicsImageRenderer(size:size,format:format).image { _ in image.draw(in:CGRect(origin:.zero,size:size)) }
         guard let data = resized.jpegData(compressionQuality:0.4), data.count <= 3_000_000 else { error = "Could not prepare that image."; return }
-        photo = resized; photoLabel = label; jpeg = data; capturedAt = Date()
+        if mode == .bavarian && slot == 1 { comparisonPhoto = resized; comparisonJPEG = data }
+        else { photo = resized; jpeg = data }
+        photoLabel = label; capturedAt = Date()
     }
-    func submitPhoto(_ image: UIImage, label:String = "CAPTURED STILL") {
-        setPhoto(image,label:label)
-        guard photo != nil, error == nil else { return }
-        decide()
+    func submitPhoto(_ image: UIImage, label:String = "CAPTURED STILL", slot:Int = 0) {
+        setPhoto(image,label:label,slot:slot)
+        guard error == nil else { return }
+        if mode == .bavarian { if slot == 0 && comparisonPhoto == nil { activePhotoSlot = 1 } }
+        else if photo != nil { decide() }
     }
     func decide() {
         cancel()
         if fixture { accept(DecisionPolicy.fixture(mode),seconds:nil); return }
+        guard mode != .bavarian || hasPair else { error = "Add Photo A and Photo B before comparing."; return }
         guard let jpeg, let capturedAt else { error = "Capture a still or choose a photo first."; return }
-        guard Date().timeIntervalSince(capturedAt) <= 60 else { error = "This still is over 60 seconds old. Retake or choose it again."; return }
+        guard mode == .bavarian || Date().timeIntervalSince(capturedAt) <= 60 else { error = "This still is over 60 seconds old. Retake or choose it again."; return }
         guard let key = KeychainStore.read() else { hasKey = false; error = "Add your demo API key in Settings first."; return }
         let token = revision; let selectedMode = mode
+        let secondJPEG = comparisonJPEG
         busy = true
         task = Task {
             do {
-                let result = try await DecisionClient.evaluate(mode:selectedMode,jpeg:jpeg,key:key)
+                let result = try await DecisionClient.evaluate(mode:selectedMode,jpeg:jpeg,comparisonJPEG:secondJPEG,key:key)
                 guard !Task.isCancelled, token == revision else { return }
                 accept(result.response,seconds:result.seconds)
                 if let value = result.serverMs.flatMap(Double.init), value.isFinite, value >= 0 { apiMilliseconds = value }
@@ -61,7 +71,6 @@ import UIKit
             }
             if token == revision {
                 busy = false
-                if selectedMode == .crowd { photo = nil; self.jpeg = nil; self.capturedAt = nil }
             }
         }
     }

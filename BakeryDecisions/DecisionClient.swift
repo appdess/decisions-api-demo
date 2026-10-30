@@ -43,11 +43,11 @@ enum DecisionClient {
         request.timeoutInterval = 5
         _ = try? await session.data(for:request,delegate:NoRedirect())
     }
-    static func evaluate(mode: BakeryMode, jpeg: Data, key: String) async throws -> LiveResult {
+    static func evaluate(mode: BakeryMode, jpeg: Data, comparisonJPEG: Data? = nil, key: String) async throws -> LiveResult {
         let delegate = NoRedirect()
         var request = URLRequest(url:URL(string:"https://api.openai.com/v1/decisions")!)
         request.httpMethod = "POST"; request.setValue("Bearer \(key)",forHTTPHeaderField:"Authorization"); request.setValue("application/json",forHTTPHeaderField:"Content-Type")
-        request.httpBody = try DecisionPolicy.request(mode,jpeg:jpeg)
+        request.httpBody = try DecisionPolicy.request(mode,jpeg:jpeg,comparisonJPEG:comparisonJPEG)
         let start = ProcessInfo.processInfo.systemUptime
         let (data, response) = try await session.data(for:request,delegate:delegate)
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
@@ -63,7 +63,7 @@ enum DecisionClient {
         // Local profiling evidence only: never persist the photo, body, headers or key.
         if let timing = delegate.snapshot(), let timingData = try? JSONEncoder().encode(timing),
            let phases = try? JSONSerialization.jsonObject(with:timingData) {
-            let report: [String:Any] = ["transport":phases,"requestBytes":request.httpBody?.count ?? 0,"jpegBytes":jpeg.count,"roundTripMs":elapsed*1000,"serverMs":http.value(forHTTPHeaderField:"openai-processing-ms") ?? "unavailable","requestID":http.value(forHTTPHeaderField:"x-request-id") ?? "unavailable"]
+            let report: [String:Any] = ["transport":phases,"requestBytes":request.httpBody?.count ?? 0,"jpegBytes":jpeg.count + (comparisonJPEG?.count ?? 0),"roundTripMs":elapsed*1000,"serverMs":http.value(forHTTPHeaderField:"openai-processing-ms") ?? "unavailable","requestID":http.value(forHTTPHeaderField:"x-request-id") ?? "unavailable"]
             if let data = try? JSONSerialization.data(withJSONObject:report,options:[.prettyPrinted,.sortedKeys]),
                let folder = FileManager.default.urls(for:.documentDirectory,in:.userDomainMask).first {
                 try? data.write(to:folder.appendingPathComponent("latency-last.json"),options:.atomic)
