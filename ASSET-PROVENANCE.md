@@ -11,6 +11,7 @@ The Servus Snap 1.3 app icon and home mark are local AppKit renderings of the sy
 The pretzel result example was supplied by Alexander on 28 October 2026 and copied without image edits. The home and comparison examples are simulator captures from 30 October 2026:
 
 - `docs/screenshots/home.png`: refreshed from the iPhone simulator on 30 October 2026 for version 1.4, showing Bavarian Battle first with matching flag check/X artwork and the Flag badge home mark.
+- `docs/screenshots/opening-screen.png`: an additional opening-interface capture from the iPhone simulator on 30 October 2026, using Servus Snap 1.4.0 (13). Saved directly with `simctl io screenshot`, without image edits, and used as the primary README opening-screen preview.
 - `docs/screenshots/pretzel-result.png`: pretzel check result, captured at 12:20.
 - `docs/screenshots/bavarian-sample.png`: version 1.3 sample comparison result, clearly labeled as a hand-authored answer with no API call.
 

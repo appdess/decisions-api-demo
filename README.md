@@ -10,11 +10,11 @@ Tap **Details** to inspect the returned answers, or **Example result** on the ho
 
 ## App examples
 
-iPhone screenshots showing the current home screen and Alexander's Lederhosen-versus-shorts comparison. The saved result was captured on 30 October 2026 and shows the feature's earlier More Bavarian label. The app also offers a separate illustrative pretzel/croissant sample with hand-authored answers and no API call.
+The opening screen below was captured in the iPhone simulator for Servus Snap 1.4.0. Bavarian Battle appears first, with the same card layout and check/X badges as Pretzel or not?. Alexander's Lederhosen-versus-shorts result was captured on an iPhone on 30 October 2026 and shows the feature's earlier More Bavarian label. The app also offers a separate illustrative pretzel/croissant sample with hand-authored answers and no API call.
 
-| Choose a mode | Bavarian Battle on iPhone |
+| Opening screen (simulator) | Bavarian Battle on iPhone |
 | :---: | :---: |
-| <img src="docs/screenshots/home.png" alt="Servus Snap home screen with Bavarian Battle first, followed by Pretzel or not and Classify" width="280"> | <img src="docs/screenshots/bavarian-battle-iphone.png" alt="iPhone result comparing Lederhosen in Photo A with shorts in Photo B, selecting Photo A and showing the model's probability distribution and 515 ms API processing time" width="280"> |
+| <img src="docs/screenshots/opening-screen.png" alt="Servus Snap opening interface captured in the iPhone simulator, with Flag badge branding and Bavarian Battle first, followed by Pretzel or not and Classify" width="280"> | <img src="docs/screenshots/bavarian-battle-iphone.png" alt="iPhone result comparing Lederhosen in Photo A with shorts in Photo B, selecting Photo A and showing the model's probability distribution and 515 ms API processing time" width="280"> |
 
 ### Bavarian Battle
 
